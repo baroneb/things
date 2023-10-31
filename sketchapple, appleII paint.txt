@@ -1,0 +1,52 @@
+1 rem // sketchmake , drawing program
+10 home : gr
+20 cp = 0 : c = 0 : oc = 15 : pl = 0 : rem // color 
+30 x = 0 : y = 0  : rem //cursor xy
+40 bg = 15 : mo$ = "X" : rem //background color, loading
+50 lo = 1
+60 if lo = 1 then gosub 1000
+70 gosub 2000
+80 gosub 3000
+90 color = c : hlin 37, 38 at 39 
+110 vtab 21 : htab 1 : print ("0 1 2 3 4 5 6 7 8 9 101112131415")
+120 vtab 22 : htab 1 : print ("(P)lot (N)oPlot (E)rase (R)eset (B)ackGr")
+130 vtab 23 : htab 29 : print ("Sketchapple")
+140 vtab 21 : htab 39 : print mo$ : vtab 24
+150 if w = 39 then lo = 0
+160 goto 60
+999 rem // background
+1000 for w = 0 to 38
+1010 for h = 0 to 39
+1020 color = bg
+1050 PLOT h, w
+1060 NEXT h, w
+1070 return
+1999 rem //color codes
+2000 color = cp
+2010 plot (cp*2), 39
+2020 if cp < 15 then cp = cp + 1
+2030 return
+2999 rem //keyboard
+3000 k = peek(49152)
+3010 lx = x : ly = y
+3020 if x < 39 then if k = 196 then x = x + 1 : poke - 16368,0
+3030 if x > 0 then if k = 193 then x = x - 1 : poke - 16368,0
+3040 if y < 38 then if k = 211 then y = y + 1 : poke - 16368,0
+3050 if y > 0 then if k = 215 then y = y - 1 : poke - 16368,0
+3060 if k = 208 then pl = 1 : mo$ = "P" : poke - 16368,0
+3070 if k = 206 then pl = 0 : mo$ = "X" : poke - 16368,0
+3080 if k = 197 then c = 15 : pl = 1 : mo$ = "E" : poke - 16368,0
+3090 if k = 136 then c = c-1 : poke - 16368, 0
+3100 if k = 149 then c = c+1 : poke - 16368, 0
+3120 if k = 210 then input "Reset?"; re$: if re$ = "y" or re$ = "Y" then home : bg = 15 : goto 50
+3130 if k = 210 then home
+3140 if k = 195 then vtab 24: input "Color:";c: color= C : re$ = "C": home 
+3150 if k = 194 then vtab 24: input "BG Color:";bg : home : goto 50
+3160 if pl = 0 then color= oc : plot lx,ly
+3170 oc = scrn(x, y)
+3180 if c < 0 then c = 15
+3190 if c > 15 then c = 0
+3200 color= c : plot x,y
+3210 return
+
+

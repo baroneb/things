@@ -1,0 +1,92 @@
+10 home
+20 gr
+25 rem //vars
+30 let lo = 1 : rem // loading
+35 let w = 39 : let h = 39
+40 let x = 19 : let xb = x + 4 : rem // paddle x, paddle second x
+50 let lx = x : let lb = lx + 4 : rem // last y, last x
+60 let sc = 0 : let sp = 2 : rem // score, speed 
+65 let lv = 1 : rem // level 1-easy 2-medium 3-hard
+70 dim rx(4) : dim ry(4) : rem //raindrop x, raindrop y (support multiple raindrops at a time)
+80 dim dr(4) : rem // touch
+90 let gm = 1 : let l = 0 
+100 let sd = 0 : let bg = 4
+ 
+300 if w = 40 then lo = 0
+310 if lo = 1 then gosub 4000
+320 if gm = 1 then gosub 1000
+330 if dr(0) = 0 then gosub 2000
+340 if gm = 1 then gosub 3000
+350 if l = 1 then gosub 6000
+360 if l = 2 then gm = 0 
+370 gosub 5000
+
+380 for n = 1 to 150 : next n
+390 xb = x + 4
+400 color = 13
+410 hlin x, xb at 38
+415 color = 8 : plot x +1, 39 : plot xb -1, 39
+420 htab 1 : vtab 21 : print sc
+430 vtab 21 : htab 37: print ("lvl") lv
+500 goto 300
+
+999 rem // player controler
+1000 let k = peek(49152)
+1040 if k = 136 or k = 149 then lx = x : lb = lx + 4 : color = bg : hlin lx, lb at 38 : hlin lx, lb at 39
+1050 if xb < 38 then if k = 149 then x = x + sp : poke 49168, 0
+1060 if x > 1 then if k = 136 then x = x - sp : poke 49168, 0
+1070 if k = 160 then if sp = 2 then sp = 10 : poke 49168, 0
+1080 if k = 160 then if sp = 10 then sp =2 : poke 49168, 0
+1090 return
+
+1999 rem // spawn drop
+2000 let rx(0) = INT(RND(1) * 39)
+2010 let dr(0) = 1
+2020 ry(0) = 0
+2100 return
+
+2999 rem //drop movement
+3000 ry(0) = ry(0) + 1
+3010 color = 7 : plot rx(0), ry(0)
+3020 color = bg : plot rx(0), (ry(0) - 1)
+3030 if ry(0) > 37 then if rx(0) >= x then if rx(0) <= xb then ry(0) = 0 : sc = sc + 100 :dr(0) = 0
+3040 if ry(0) > 37 then if rx(0) < x or rx(0) > xb then ry(0) = 0 : vtab 21 : htab 16 : print("you lost") : l = 1
+3050 if lv >= 2 then if ry(0) = 27 then gosub 7000
+3060 if sd == 1 then gosub 8000
+3200 return
+
+3999 rem // background
+4000 for w = 0 to 39
+4010 for h = 0 to 39
+4020 color = bg
+4030 PLOT h, w
+4040 NEXT h, w
+4050 return
+
+4999 rem // score and level
+5000 if sc < 1000 then lv = 1
+5010 if sc >= 2500 then if sc < 7500 then lv= 2
+5020 if sc >= 7500 then lv = 3 
+5040 return
+
+5999 rem // lost
+6000 for u = 0 to 39
+6010 for s = 0 to 39
+6020 color = 9
+6030 PLOT u, s
+6040 NEXT s, u
+6045 if s = 40 then l = 2
+6050 return
+
+6999 rem //second drop
+7000 if lv >= 2 then let rx(1) = INT(RND(1) * 39)
+7020 sd = 1
+7030 return
+
+7999 rem // 2drop movement
+8000 if lv >= 2 then ry(1) = ry(1) + 1
+8010 if lv >= 2 then color = 7 : plot rx(1), ry(1)
+8020 if lv >= 2 then color = bg : plot rx(1), (ry(1) - 1)
+8030 if ry(1) > 37 then if rx(1) >= x then if rx(1) <= xb then ry(1) = 0 : sc = sc + 100
+8040 if ry(1) > 37 then if rx(1) < x or rx(1) > xb then ry(1) = 0 : vtab 21 : htab 16 : print("you lost") : l = 1
+8050 return
